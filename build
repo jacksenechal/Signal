@@ -1,0 +1,13 @@
+#!/bin/bash
+csound=/home/jack/src/csound5
+if [ $# != 1 ]
+then
+  echo "Arg! Missing argument."
+  exit
+fi
+wd=`pwd`
+cd $csound
+cmd="g++ -o $wd/$1 -I H/ -I interfaces/ $wd/$1.cpp libcsnd.so"
+echo $cmd
+`$cmd`
+cd $wd

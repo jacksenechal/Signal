@@ -7,7 +7,8 @@ then
 fi
 wd=`pwd`
 cd $csound
-cmd="g++ -o $wd/$1 -I H/ -I interfaces/ $wd/$1.cpp libcsnd.so"
+#cmd="g++ -o $wd/$1 -I H/ -I interfaces/ -I frontends/CsoundAC/ $wd/$1.cpp libcsnd.so libcsound64.so libCsoundAC.a"
+cmd="g++ -o $wd/$1 -I H/ -I interfaces/ -I frontends/CsoundAC/ $wd/$1.cpp libcsnd.so libCsoundAC.a"
 echo $cmd
 `$cmd`
 cd $wd

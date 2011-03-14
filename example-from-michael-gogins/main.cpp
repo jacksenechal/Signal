@@ -1,6 +1,5 @@
 #include <iostream>
 // Declares ALL of CsoundAC as well as ALL of Csound.
-#include <CppSound.hpp>
 #include <Silence.hpp>
 
 int main()

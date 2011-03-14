@@ -1,5 +1,4 @@
-#include <CppSound.hpp>
-#include <MusicModel.hpp>
+#include <Silence.hpp>
 #include <iostream>
 using namespace std;
 
@@ -35,11 +34,15 @@ int main(int argc, char **argv)
     endin\
   ";
   string score = "i 1 0 10 68 80";
-  string command = "csound -RWfo toot1.wav toot1.orc toot1.sco";
-  CppSound *cs = new CppSound();
-  csound::MusicModel *model = new csound::MusicModel();
-  model->setCsoundOrchestra(orchestra);
-  model->setCsoundScoreHeader(score);
-  model->setCsoundCommand(command);
-  model->perform();
+  //string command = "csound -RWfo toot1.wav toot1.orc toot1.sco";
+  csound::MusicModel model;
+  CppSound *cs = model.getCppSound();
+  model.setCsoundOrchestra(orchestra);
+  model.setCsoundScoreHeader(score);
+  model.generate();
+  model.render();
+  //model->setCsoundCommand(command);
+  model.perform();
+  cs->exportForPerformance();
+  cs->perform();
 }

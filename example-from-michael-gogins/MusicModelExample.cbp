@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="MusicModelExample" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/MusicModelExample" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add directory="/home/mkg/csound/head/H" />
+					<Add directory="/home/mkg/csound/head/interfaces" />
+					<Add directory="/home/mkg/csound/head/frontends/CsoundAC" />
+				</Compiler>
+				<Linker>
+					<Add library="/home/mkg/csound/head/libCsoundAC.a" />
+					<Add library="/home/mkg/csound/head/libcsnd.so" />
+					<Add library="/home/mkg/csound/head/libcsound64.so" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="main.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

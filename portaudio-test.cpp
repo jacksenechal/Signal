@@ -8,7 +8,6 @@
 #include <portaudio.h>
 using namespace std;
 
-#define NUM_SECONDS   (4)
 #define SAMPLE_RATE   (44100)
 
 typedef struct
@@ -18,7 +17,9 @@ typedef struct
 }
 paTestData;
 
-static bool paSawStop;
+bool paSawStop;
+pthread_mutex_t paSawStopMutex;
+pthread_cond_t buttonPressedCondition;
 
 /* This routine will be called by the PortAudio engine when audio is needed.
 ** It may called at interrupt level on some machines so don't do anything
@@ -30,9 +31,6 @@ static int paSawCallback( const void *inputBuffer, void *outputBuffer,
                            PaStreamCallbackFlags statusFlags,
                            void *userData )
 {
-    // return 1 to exit callback loop if stop is requested
-    if (paSawStop == true) return 1;
-
     /* Cast data passed through stream to our structure. */
     paTestData *data = (paTestData*)userData;
     float *out = (float*)outputBuffer;
@@ -82,8 +80,10 @@ void *paSaw(void*)
     err = Pa_StartStream( stream );
     if( err != paNoError ) goto error;
 
-    /* Sleep for several seconds. */
-    Pa_Sleep(NUM_SECONDS*1000);
+    /* Sleep until button turned off */
+    pthread_mutex_lock(&paSawStopMutex);
+    pthread_cond_wait(&buttonPressedCondition, &paSawStopMutex);
+    pthread_mutex_unlock(&paSawStopMutex);
 
     err = Pa_StopStream( stream );
     if( err != paNoError ) goto error;
@@ -134,7 +134,10 @@ void buttonCallback( Fl_Widget* obj, int* buttonOn )
         cout << "created thread.\n";
     } else {
         // terminate it
+        pthread_mutex_lock(&paSawStopMutex);
         paSawStop = true;
+        pthread_mutex_unlock(&paSawStopMutex);
+        pthread_cond_signal(&buttonPressedCondition);
     }
 }
 
@@ -150,7 +153,14 @@ void makeWindow()
 }
 
 int main(int argc, char *argv[]) {
+    /* Initialize mutex and condition variable objects */
+    pthread_mutex_init(&paSawStopMutex, NULL);
+    pthread_cond_init (&buttonPressedCondition, NULL);
+
     makeWindow();
     return Fl::run();
+
+    pthread_mutex_destroy(&paSawStopMutex);
+    pthread_cond_destroy(&buttonPressedCondition);
 }
 

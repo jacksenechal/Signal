@@ -1,0 +1,32 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
+header_name {.h} 
+code_name {.cxx}
+class UserInterface {open
+} {
+  Function {make_window()} {open
+  } {
+    Fl_Window {} {open
+      xywh {659 39 180 170} type Double visible
+    } {
+      Fl_Light_Button sawWaveButton {
+        label {Saw Wave}
+        user_data userdata
+        callback {// do something in the callback} selected
+        xywh {25 25 125 25} shortcut 0x77
+      }
+      Fl_Light_Button midiThroughButton {
+        label {Midi Through}
+        user_data userdata
+        callback {// do something in the callback} selected
+        xywh {25 65 125 25} shortcut 0x6d
+      }
+      Fl_Light_Button midiSynthButton {
+        label {Midi Synth}
+        user_data userdata
+        callback {// do something in the callback} selected
+        xywh {25 105 125 25} shortcut 0x73
+      }
+    }
+  }
+} 

@@ -1,0 +1,13 @@
+#!/bin/bash
+basename=${1%.*}
+PORTAUDIO_REQS="-lportaudio"
+PORTMIDI_REQS="-I/home/jack/src/portmedia/portmidi/trunk/pm_common \
+    -I/home/jack/src/portmedia/portmidi/trunk/porttime \
+    -L/home/jack/src/portmedia/portmidi/trunk/release -lportmidi"
+FLTK_PRE_REQS="-I/home/jack/src/fltk-1.3 -I/usr/include/freetype2 -D_LARGEFILE_SOURCE \
+    -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_THREAD_SAFE -D_REENTRANT -lXext -lXft \
+    -lfontconfig -lXinerama -lpthread -ldl -lm -lX11"
+FLTK_POST_REQS="/home/jack/src/fltk-1.3/lib/libfltk.a"
+cmd="g++ $FLTK_PRE_REQS $PORTAUDIO_REQS $PORTMIDI_REQS -o $basename $1 $FLTK_POST_REQS"
+echo $cmd
+`$cmd`

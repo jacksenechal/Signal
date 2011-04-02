@@ -2,6 +2,14 @@
 
 #ifndef synth_test_h
 #define synth_test_h
+#include <stdio.h>
+#include <iostream>
+#include <pthread.h>
+#include <math.h>
+#include <portaudio.h>
+#include "portmidi.h"
+#include "pmutil.h"
+#include "porttime.h"
 #include <FL/Fl.H>
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Light_Button.H>
@@ -12,7 +20,7 @@ class PortAudioTest {
         ~PortAudioTest();
         void start();
         void stop();
-        void *saw();
+        void* saw();
 
     private:
         /* user data for the PortAudio engine callback */
@@ -34,23 +42,20 @@ class PortAudioTest {
 
 class PortMidiTest {
     public:
-        PortMidiTest();
-        ~PortMidiTest();
-        void start();
+        bool start();
         void stop();
-        int buttonState;
-        pthread_mutex_t midiThruButtonMutex;
-        pthread_cond_t midiThruButtonCondition;
     private:
-        pthread_t thread;
+        PmStream* midi_in;
+        PmStream* midi_out;
+        void cancelStart();
 };
 
 class UserInterface {
     public:
         Fl_Double_Window* make_window();
-        Fl_Light_Button *sawWaveButton;
-        Fl_Light_Button *midiThruButton;
-        Fl_Light_Button *midiSynthButton;
+        Fl_Light_Button* sawWaveButton;
+        Fl_Light_Button* midiThruButton;
+        Fl_Light_Button* midiSynthButton;
     private:
         PortAudioTest patest;
         PortMidiTest pmtest;

@@ -39,16 +39,21 @@ class PortAudioTest {
                 const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags,
                 void* );
 };
+void* PortAudioTest_saw(void*);
 
 class PortMidiTest {
     public:
         bool start();
         void stop();
+        PortMidiTest();
+        void processMidi();
     private:
+        int active;
         PmStream* midi_in;
         PmStream* midi_out;
         void cancelStart();
 };
+void PortMidiTest_processMidi(PtTimestamp, void*);
 
 class UserInterface {
     public:

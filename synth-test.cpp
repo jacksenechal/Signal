@@ -96,15 +96,6 @@ error:
     pthread_exit(NULL);
 }
 
-/* Pthreads are a C level API, so don't understand member methods.
- * Hence we must use this global function to call the member method
- * PortAudioTest::saw()
- */
-void* PortAudioTest_saw(void* arg) {
-    PortAudioTest* patest = static_cast<PortAudioTest*>(arg);
-    patest->saw();
-}
-
 /* Start the thread for the PortAudio test */
 void PortAudioTest::start() {
     pthread_t thread;
@@ -123,17 +114,27 @@ void PortAudioTest::stop() {
     pthread_mutex_unlock(&sawButtonMutex);
 }
 
+/* Pthreads are a C level API, so don't understand member methods.
+ * Hence we must use this global function to call the member method
+ * PortAudioTest::saw()
+ */
+void* PortAudioTest_saw(void* arg) {
+    PortAudioTest* patest = static_cast<PortAudioTest*>(arg);
+    patest->saw();
+}
+
 //==================================================================
 // PortMidiTest Class
 //==================================================================
 
-void processMidi(PtTimestamp timestamp, void *userData) {
+PortMidiTest::PortMidiTest() {
+    active = FALSE;
 }
 
 /* Start the thread for the PortMidi test */
 bool PortMidiTest::start() {
     /* always start the timer before you start midi */
-    Pt_Start(1, &processMidi, 0); /* start a timer with millisecond accuracy */
+    Pt_Start(1, &PortMidiTest_processMidi, this); /* start a timer with millisecond accuracy */
     /* the timer will call our function, process_midi() every millisecond */
 
     Pm_Initialize();
@@ -172,6 +173,10 @@ bool PortMidiTest::start() {
             NULL, //TIME_PROC
             NULL //TIME_INFO
             );
+ 
+    active = TRUE; /* enable processing in the midi thread -- yes, this
+                      is a shared variable without synchronization, but
+                      this simple assignment is safe */
 
     return true;
 }
@@ -185,6 +190,39 @@ void PortMidiTest::stop() {
     Pm_Close(midi_in);
     Pm_Close(midi_out);
     cout << "PortMidi devices closed" << endl;
+}
+
+void PortMidiTest::processMidi() {
+    PmError result;
+    PmEvent buffer; /* just one message at a time */
+    int32_t msg;
+
+    /* do nothing until initialization completes */
+    if (!active) 
+        return;
+
+    /* see if there is any midi input to process */
+    do {
+		result = Pm_Poll(midi_in);
+        if (result) {
+            if (Pm_Read(midi_in, &buffer, 1) == pmBufferOverflow) 
+                continue;
+            /* MIDI through */
+            Pm_Write(midi_out, &buffer, 1);
+            /* unless there was overflow, we should have a message to print */
+            if(Pm_MessageStatus(buffer.message) == 0xf8) continue; //filter out time clock messages
+            cout << "Msg Status:     "<< hex << Pm_MessageStatus(buffer.message) << endl;
+            cout << "Data1:          "<< Pm_MessageData1(buffer.message) << endl;
+            cout << "Data2:          "<< Pm_MessageData2(buffer.message) << endl;
+            cout << "Timestamp (ms): "<< dec << buffer.timestamp << endl;
+        }
+    } while (result);
+}
+
+/* C-level callback wrapper for PortMidiTest::processMidi() */
+void PortMidiTest_processMidi(PtTimestamp timestamp, void *arg) {
+    PortMidiTest* pmtest = static_cast<PortMidiTest*>(arg);
+    pmtest->processMidi();
 }
 
 

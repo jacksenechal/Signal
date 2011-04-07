@@ -14,6 +14,28 @@
 #include <FL/Fl_Double_Window.H>
 #include <FL/Fl_Light_Button.H>
 
+class PortMidiTest {
+    public:
+        PmQueue* midiToSynthQueue;
+        bool noteOn;
+        int frequency;
+        PortMidiTest();
+        ~PortMidiTest();
+        void processMidi();
+        void setMidiThru(bool);
+        void setMidiToSynth(bool);
+    private:
+        int active;
+        bool midiThru;
+        bool midiToSynth;
+        PmStream* midiIn;
+        PmStream* midiOut;
+        bool start();
+        void stop();
+        void cancelStart();
+};
+void PortMidiTest_processMidi(PtTimestamp, void*);
+
 class PortAudioTest {
     public:
         PortAudioTest();
@@ -21,46 +43,36 @@ class PortAudioTest {
         void start();
         void stop();
         void* saw();
-
+        void setMonotoneSaw(bool);
+        void setMidiSaw(bool);
+        void setMidiSource(PortMidiTest*);
     private:
-        /* user data for the PortAudio engine callback */
+        int active;
+        bool monotoneSaw;
+        bool midiSaw;
         typedef struct
         {
-            float left_phase;
-            float right_phase;
+            float leftPhase;
+            float rightPhase;
+            bool* noteOn;
+            int* frequency;
         } paTestData;
         paTestData data;
-
-        /* saw button thread variables */
         pthread_mutex_t sawButtonMutex;
         pthread_cond_t sawButtonOffCondition;
-
         static int paSawCallback( const void*, void*, unsigned long,
                 const PaStreamCallbackTimeInfo*, PaStreamCallbackFlags,
                 void* );
 };
 void* PortAudioTest_saw(void*);
 
-class PortMidiTest {
-    public:
-        bool start();
-        void stop();
-        PortMidiTest();
-        void processMidi();
-    private:
-        int active;
-        PmStream* midi_in;
-        PmStream* midi_out;
-        void cancelStart();
-};
-void PortMidiTest_processMidi(PtTimestamp, void*);
-
 class UserInterface {
     public:
-        Fl_Double_Window* make_window();
         Fl_Light_Button* sawWaveButton;
         Fl_Light_Button* midiThruButton;
         Fl_Light_Button* midiSynthButton;
+        UserInterface();
+        Fl_Double_Window* makeWindow();
     private:
         PortAudioTest patest;
         PortMidiTest pmtest;

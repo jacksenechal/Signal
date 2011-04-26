@@ -58,7 +58,7 @@ look at those.
 
 POSIX Threads.
 
-    https://computing.llnl.gov/tutorials/pthreads/
+Good tutorial: https://computing.llnl.gov/tutorials/pthreads/
 
 ### Other
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-csound=/home/jack/src/csound5
+csound=$HOME/src/csound5
 if [ $# != 1 ]
 then
   echo "Arg! Missing argument."

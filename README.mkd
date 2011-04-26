@@ -1,0 +1,95 @@
+Signal
+======
+
+This project is currently a scratchpad for research relating to synthesisers
+and DSP, code named "Signal".
+
+Current Goals
+-------------
+
+* Build a framework for realtime audio synthesis with midi input
+* Research tools and techniques that will enable the framework
+
+Resources
+---------
+
+### PortAudio
+
+Realtime audio libraries. I'm using the following Ubuntu packages for PA:
+
+    libportaudio0	
+    libportaudio2	
+    libportaudiocpp0
+    portaudio19-dev	
+
+### PortMIDI
+
+Realtime MIDI libraries. I've built this from the source in the SVN repository at:
+
+    https://portmedia.svn.sourceforge.net/svnroot/portmedia
+
+It comes with a program called `pmdefaults` (built in the "Release" directory
+with the other binaries) which allows you to select your default devices and
+saves it to a prefs file in ~/.java/.userPrefs/PortMidi/prefs.xml.
+
+Before you use the `pmdefaults` program or other portmidi executables, you need
+to set the library path to the "Release" directory. Put this in your .bashrc
+file (adjusted for your correct path, of course):
+
+    LD_LIBRARY_PATH=$HOME/src/portmedia/portmidi/trunk/Release/
+
+### FLTK
+
+Fast Light ToolKit--A GUI library for C++ that is extremely lightweight and fast.
+
+I've built this from source as well, from the SVN repository at:
+
+    http://svn.easysw.com/public/fltk/fltk/branches/branch-1.3
+
+### Synthesis Toolkit
+
+The Synthesis Toolkit is a set of synth libraries from CCRMA. I have not
+incorporated these into the project yet, but that is one of the next steps.
+
+STK uses rtaudio and rtmidi instead of portaudio and portmidi, so we'll need to
+look at those.
+
+### Pthreads
+
+POSIX Threads.
+
+    https://computing.llnl.gov/tutorials/pthreads/
+
+### Other
+
+* Csound: we tried to get this to work, but have concluded that it's not really
+  made for the type of embedding inside another program that we would need it
+  to do. We may come back to this at some point, but for now it's dead.
+
+Code
+----
+
+### building scripts
+
+The names say it all. You run them like `./build_with_whatever something.cpp`,
+and that will output the program `something`.
+
+* `build_with_pa_pm_and_fltk`
+* `build_with_pa_and_fltk`
+* `build_with_csound`
+
+### `synth-test`
+
+Builds on `portaudio-test` to create an extremely basic midi synth. PortMIDI is
+used for MIDI input, which is passed to the saw-wave generator from the
+`portaudio-test` example, and/or passed through to the selected midi-out
+device. Use the `pmdefaults` program to select your midi devices.
+
+### `portaudio-test`
+
+A simple saw-wave generator using PortAudio for output and a FLTK button to
+stop and start it.
+
+### `fluid-test`
+
+The Fluid-generated FLTK UI template that was used to create synth-test.
